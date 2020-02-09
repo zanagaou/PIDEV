@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.4
+-- version 4.9.2
 -- https://www.phpmyadmin.net/
 --
--- Hôte : 127.0.0.1:3306
--- Généré le :  sam. 08 fév. 2020 à 10:22
--- Version du serveur :  5.7.24
--- Version de PHP :  7.2.14
+-- Hôte : 127.0.0.1:3308
+-- Généré le :  Dim 09 fév. 2020 à 10:41
+-- Version du serveur :  5.7.28
+-- Version de PHP :  7.3.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -36,6 +36,14 @@ CREATE TABLE IF NOT EXISTS `admin` (
   `mail` varchar(50) NOT NULL,
   PRIMARY KEY (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `admin`
+--
+
+INSERT INTO `admin` (`login`, `mdp`, `etat_compte`, `mail`) VALUES
+('admin', 'test', 0, 'test@esprit.tn'),
+('aziz', 'test', 0, 'test@esprit.tn');
 
 -- --------------------------------------------------------
 
@@ -77,7 +85,15 @@ CREATE TABLE IF NOT EXISTS `chauffeur` (
   `id_vehicule` int(30) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_vehicule` (`id_vehicule`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `chauffeur`
+--
+
+INSERT INTO `chauffeur` (`id`, `cin`, `nom`, `prenom`, `tel`, `sexe`, `date_naissance`, `salaire`, `note`, `image`, `etat_compte`, `role`, `num_permis`, `mdp`, `id_vehicule`) VALUES
+(1, 1133, 'aziz', 'alaa', 55231, 'homme', '0011-12-11', 133.2, 4.3, NULL, 1, 'taxi', 4455, 'hahaha', 28),
+(5, 1133, 'aziz', 'alaa', 55231, 'homme', '0011-12-11', 133.2, 4.3, NULL, 1, 'taxi', 4455, 'hahaha', 28);
 
 -- --------------------------------------------------------
 
@@ -97,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `client` (
   `image` varbinary(6000) DEFAULT NULL,
   `mail` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `client`
@@ -105,7 +121,52 @@ CREATE TABLE IF NOT EXISTS `client` (
 
 INSERT INTO `client` (`id`, `nom`, `prenom`, `tel`, `adresse`, `mdp`, `etat_compte`, `image`, `mail`) VALUES
 (44, 'khalil', 'bejaoui', 1231, 'menzah 1', 'hello', 0, NULL, 'hh@hh'),
-(66, 'khalil', 'bejaoui', 1231, 'menzah 1', 'hello', 0, NULL, 'hh@hh');
+(104, 'khalil', 'bejaoui', 1231, 'menzah 1', 'hello', 0, NULL, 'hh@hh');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `meuble`
+--
+
+DROP TABLE IF EXISTS `meuble`;
+CREATE TABLE IF NOT EXISTS `meuble` (
+  `id` int(20) NOT NULL,
+  `taille` varchar(50) NOT NULL,
+  `quantite` int(20) NOT NULL,
+  `prix` float NOT NULL,
+  `id_reservation` int(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_meuble_reservation` (`id_reservation`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `offre`
+--
+
+DROP TABLE IF EXISTS `offre`;
+CREATE TABLE IF NOT EXISTS `offre` (
+  `id` int(20) NOT NULL AUTO_INCREMENT,
+  `nb_place` int(250) NOT NULL,
+  `depart` varchar(40) NOT NULL,
+  `arrive` varchar(40) NOT NULL,
+  `date` date NOT NULL,
+  `tarif` double NOT NULL,
+  `id_offreur` int(50) NOT NULL,
+  `id_client` int(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_offreur` (`id_offreur`),
+  KEY `id_client` (`id_client`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `offre`
+--
+
+INSERT INTO `offre` (`id`, `nb_place`, `depart`, `arrive`, `date`, `tarif`, `id_offreur`, `id_client`) VALUES
+(15, 4, 'kasserine', 'sousse', '0011-12-11', 4.2, 44, 44);
 
 -- --------------------------------------------------------
 
@@ -124,14 +185,35 @@ CREATE TABLE IF NOT EXISTS `postulation` (
   `id_client` int(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id_client` (`id_client`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `postulation`
 --
 
 INSERT INTO `postulation` (`id`, `date_demande`, `num_permis`, `cin`, `sexe`, `etat`, `id_client`) VALUES
-(12, '0011-12-11', 4512, 11223, 'homme', 1, 44);
+(31, '0011-12-11', 4512, 11223, 'homme', 1, 44);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `reservation`
+--
+
+DROP TABLE IF EXISTS `reservation`;
+CREATE TABLE IF NOT EXISTS `reservation` (
+  `id` int(20) NOT NULL AUTO_INCREMENT,
+  `distance` double NOT NULL,
+  `depart` varchar(50) NOT NULL,
+  `arrive` varchar(50) NOT NULL,
+  `date` date NOT NULL,
+  `id_chauffeur` int(50) NOT NULL,
+  `id_client` int(50) NOT NULL,
+  `type` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_chauffeur` (`id_chauffeur`),
+  KEY `id_client` (`id_client`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -148,15 +230,15 @@ CREATE TABLE IF NOT EXISTS `vehicule` (
   `type` varchar(20) NOT NULL,
   `etat` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `vehicule`
 --
 
 INSERT INTO `vehicule` (`id`, `immatriculation`, `numero_assurance`, `marque`, `type`, `etat`) VALUES
-(19, '126 tunis 2030', 1111, 'Ford', 'Taxi', 'mal'),
-(20, '126 tunis 2030', 1111, 'Ford', 'Taxi', 'mal');
+(28, '126 tunis 2030', 1111, 'Ford', 'Taxi', 'mal'),
+(39, '126 tunis 2030', 1111, 'Ford', 'Taxi', 'mal');
 
 --
 -- Contraintes pour les tables déchargées
@@ -169,10 +251,30 @@ ALTER TABLE `chauffeur`
   ADD CONSTRAINT `FK_id_vehicule` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`);
 
 --
+-- Contraintes pour la table `meuble`
+--
+ALTER TABLE `meuble`
+  ADD CONSTRAINT `FK_meuble_reservation` FOREIGN KEY (`id_reservation`) REFERENCES `reservation` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `offre`
+--
+ALTER TABLE `offre`
+  ADD CONSTRAINT `FK_offre_client` FOREIGN KEY (`id_client`) REFERENCES `client` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_offre_offreur` FOREIGN KEY (`id_offreur`) REFERENCES `client` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Contraintes pour la table `postulation`
 --
 ALTER TABLE `postulation`
   ADD CONSTRAINT `FK_client_post` FOREIGN KEY (`id_client`) REFERENCES `client` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `reservation`
+--
+ALTER TABLE `reservation`
+  ADD CONSTRAINT `FK_reservation_chauffeur` FOREIGN KEY (`id_chauffeur`) REFERENCES `chauffeur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_reservation_client` FOREIGN KEY (`id_client`) REFERENCES `client` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
